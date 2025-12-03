@@ -1,0 +1,2 @@
+# Cyber Saarthi Package
+__version__ = "1.0.0"

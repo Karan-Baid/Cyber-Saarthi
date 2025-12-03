@@ -1,0 +1,27 @@
+{
+  "total_examples": 422,
+  "train_examples": 337,
+  "validation_examples": 85,
+  "avg_instruction_length": 37.95023696682465,
+  "avg_output_length": 291.5521327014218,
+  "topics_covered": [
+    "Section 43 - Unauthorized Access",
+    "Section 43A - Data Protection",
+    "Section 66 - Computer Offenses",
+    "Section 66B - Receiving Stolen Resources",
+    "Section 66C - Identity Theft",
+    "Section 66D - Cheating by Personation",
+    "Section 66E - Privacy Violation",
+    "Section 66F - Cyber Terrorism",
+    "Section 67/67A/67B - Obscene Content",
+    "Section 69 - Government Powers",
+    "Section 70 - Protected Systems",
+    "Section 72/72A - Privacy and Confidentiality",
+    "Section 75 - Extra-territorial Jurisdiction",
+    "Section 79 - Intermediary Liability",
+    "General Cybersecurity Topics",
+    "CERT-In",
+    "Reporting Crimes",
+    "Best Practices"
+  ]
+}
