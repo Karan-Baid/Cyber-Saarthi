@@ -159,11 +159,8 @@ def main():
     with st.sidebar:
         st.header("⚙️ Settings")
         
-        model_path = st.text_input(
-            "Model Path",
-            value="./models/cyber-saarthi/final",
-            help="Path to the fine-tuned model directory"
-        )
+        # Use default model path
+        model_path = "./models/cyber-saarthi/final"
         
         st.subheader("Generation Parameters")
         max_new_tokens = st.slider("Max Tokens", 128, 1024, 512, 64)

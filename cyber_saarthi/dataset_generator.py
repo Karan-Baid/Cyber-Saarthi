@@ -613,39 +613,151 @@ def generate_response(question: str) -> str:
         "Are electronic records legally valid in India?": "Yes, Section 4 of the IT Act 2000 gives legal recognition to electronic records. It states that where any law requires information to be in writing or in the typewritten or printed form, such requirement shall be deemed to have been satisfied if the information is rendered or made available in an electronic form and accessible for subsequent reference. However, certain documents like negotiable instruments, powers of attorney, trusts, wills, and contracts for sale of immovable property are excluded from this provision.",
     }
     
-    return responses.get(question, f"This is an educational chatbot focused on Indian cyber laws. For detailed information about '{question}', please refer to the relevant sections of the IT Act 2000 or consult with legal professionals.")
+    # Return None if question not found - we'll skip it instead of using generic disclaimer
+    return responses.get(question, None)
 
 
 def create_dataset():
-    """Create the complete dataset"""
+    """Create the complete dataset with extensive variations"""
     dataset = CYBER_LAWS_DATA.copy()
     
+    # Add the 5 predefined additional topics that have real answers
     for question in ADDITIONAL_TOPICS:
         if question.endswith('...'):
             continue
         response = generate_response(question)
-        dataset.append({
-            "instruction": question,
-            "input": "",
-            "output": response
-        })
+        # Skip questions without real answers (returns None)
+        if response is not None:
+            dataset.append({
+                "instruction": question,
+                "input": "",
+                "output": response
+            })
     
     variations = []
-    for item in CYBER_LAWS_DATA[:20]:  # Add variations for first 20 items
-        casual_q = item["instruction"].replace("What is", "Can you explain").replace("?", " in simple terms?")
-        variations.append({
-            "instruction": casual_q,
-            "input": "",
-            "output": item["output"]
-        })
+    
+    # Create EXTENSIVE variations for ALL items in CYBER_LAWS_DATA (10+ per item)
+    for item in CYBER_LAWS_DATA:
+        instruction = item["instruction"]
+        output = item["output"]
         
-        if "What is" in item["instruction"]:
-            topic = item["instruction"].replace("What is ", "").replace("?", "")
-            variations.append({
-                "instruction": f"Tell me about {topic}",
-                "input": "",
-                "output": item["output"]
-            })
+        # Extract section number if present
+        section_num = None
+        if "Section" in instruction:
+            try:
+                section_num = instruction.split("Section")[1].split()[0].strip()
+            except:
+                pass
+        
+        # Variation Set 1: Question format variations
+        if "What is" in instruction:
+            topic = instruction.replace("What is ", "").replace("?", "")
+            
+            # Casual/conversational
+            variations.append({"instruction": f"Can you explain {topic} in simple terms?", "input": "", "output": output})
+            variations.append({"instruction": f"Tell me about {topic}", "input": "", "output": output})
+            variations.append({"instruction": f"I want to know about {topic.lower()}", "input": "", "output": output})
+            variations.append({"instruction": f"Explain {topic} to me", "input": "", "output": output})
+            variations.append({"instruction": f"Help me understand {topic.lower()}", "input": "", "output": output})
+            
+        if "What are" in instruction:
+            topic = instruction.replace("What are ", "").replace("?", "")
+            variations.append({"instruction": f"Tell me about {topic.lower()}", "input": "", "output": output})
+            variations.append({"instruction": f"Explain {topic.lower()}", "input": "", "output": output})
+            variations.append({"instruction": f"Can you list {topic.lower()}?", "input": "", "output": output})
+        
+        # Variation Set 2: Section-specific formats (if applicable)
+        if section_num:
+            variations.append({"instruction": f"Explain Section {section_num}", "input": "", "output": output})
+            variations.append({"instruction": f"What does Section {section_num} say?", "input": "", "output": output})
+            variations.append({"instruction": f"Tell me about Section {section_num}", "input": "", "output": output})
+            variations.append({"instruction": f"Describe Section {section_num} of IT Act", "input": "", "output": output})
+            variations.append({"instruction": f"Section {section_num} meaning", "input": "", "output": output})
+            variations.append({"instruction": f"I need information on Section {section_num}", "input": "", "output": output})
+        
+        # Variation Set 3: Shortened/casual versions
+        if "?" in instruction:
+            # Remove question mark, make it a statement
+            no_q = instruction.replace("?", "")
+            variations.append({"instruction": no_q, "input": "", "output": output})
+            
+        # Variation Set 4: "How does X work" for technical topics
+        if any(word in instruction.lower() for word in ["protection", "security", "practices", "encryption", "authentication"]):
+            if "What is" in instruction or "What are" in instruction:
+                topic = instruction.replace("What is ", "").replace("What are ", "").replace("?", "")
+                variations.append({"instruction": f"How does {topic.lower()} work?", "input": "", "output": output})
+                variations.append({"instruction": f"How do {topic.lower()} function?", "input": "", "output": output})
+        
+        # Variation Set 5: Penalty/punishment-specific questions
+        if "penalties" in instruction.lower() or "punishment" in instruction.lower():
+            if section_num:
+                variations.append({"instruction": f"What happens if I violate Section {section_num}?", "input": "", "output": output})
+                variations.append({"instruction": f"Consequences of Section {section_num} violation", "input": "", "output": output})
+                variations.append({"instruction": f"Legal consequences under Section {section_num}", "input": "", "output": output})
+        
+        # Variation Set 6: Example-based questions  
+        if "example" not in instruction.lower():
+            if section_num:
+                topic = instruction.replace(f"Section {section_num}", "").replace("What is", "").replace("?", "").strip()
+                if topic:
+                    variations.append({"instruction": f"Give me examples of {topic.lower()}", "input": "", "output": output})
+                    
+        # Variation Set 7: Paraphrased versions
+        paraphrases = {
+            "What is": ["Define", "Describe", "Meaning of"],
+            "What are": ["List", "Describe", "Enumerate"],
+            "punishment": ["penalties", "consequences", "legal actions"],
+            "deals with": ["covers", "relates to", "addresses"],
+        }
+        
+        for old, new_list in paraphrases.items():
+            if old in instruction:
+                for new in new_list:
+                    new_instruction = instruction.replace(old, new)
+                    if new_instruction != instruction:  # Only add if different
+                        variations.append({"instruction": new_instruction, "input": "", "output": output})
+        
+        # Variation Set 8: Scenario/practical questions
+        if "identity theft" in instruction.lower():
+            variations.append({"instruction": "Someone used my password without permission, what law applies?", "input": "", "output": output})
+            variations.append({"instruction": "Unauthorized use of digital credentials punishment", "input": "", "output": output})
+            
+        if "hacking" in instruction.lower():
+            variations.append({"instruction": "Unauthorized computer access penalties", "input": "", "output": output})
+            variations.append({"instruction": "What if someone breaks into my computer system?", "input": "", "output": output})
+            
+        if "data protection" in instruction.lower() or "43A" in instruction:
+            variations.append({"instruction": "Company leaked my data, what can I do?", "input": "", "output": output})
+            variations.append({"instruction": "Data breach compensation laws India", "input": "", "output": output})
+            
+        if "privacy" in instruction.lower() and "66E" in instruction:
+            variations.append({"instruction": "Someone shared my private images without consent", "input": "", "output": output})
+            variations.append({"instruction": "Unauthorized photography laws India", "input": "", "output": output})
+            
+        if "cybercrime" in instruction.lower() and "report" in instruction.lower():
+            variations.append({"instruction": "Where to report cyber fraud?", "input": "", "output": output})
+            variations.append({"instruction": "How to file cybercrime complaint?", "input": "", "output": output})
+            variations.append({"instruction": "Steps to report online crime", "input": "", "output": output})
+    
+    # Variation Set 9: Comparative questions for key sections
+    comparisons = [
+        ("Section 43", "Section 66", "What is the difference between Section 43 and 66?"),
+        ("Section 66C", "Section 66D", "What is the difference between Section 66C and 66D?"),
+        ("Section 67", "Section 67A", "What is the difference between Section 67 and 67A?"),
+    ]
+    
+    for sec1, sec2, question in comparisons:
+        # Find the comparison answer if it exists in CYBER_LAWS_DATA
+        for item in CYBER_LAWS_DATA:
+            if sec1 in item["instruction"] and sec2 in item["instruction"] and "difference" in item["instruction"].lower():
+                comp_output = item["output"]
+                # Add multiple variations of this comparison question
+                variations.append({"instruction": question, "input": "", "output": comp_output})
+                variations.append({"instruction": f"Difference between {sec1} and {sec2}", "input": "", "output": comp_output})
+                variations.append({"instruction": f"Compare {sec1} and {sec2}", "input": "", "output": comp_output})
+                variations.append({"instruction": f"How are {sec1} and {sec2} different?", "input": "", "output": comp_output})
+                variations.append({"instruction": f"{sec1} vs {sec2}", "input": "", "output": comp_output})
+                break
     
     dataset.extend(variations)
     

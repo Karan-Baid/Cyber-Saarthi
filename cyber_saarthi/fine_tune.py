@@ -106,7 +106,7 @@ def tokenize_function(examples, tokenizer, max_length=2048):
         examples["text"],
         truncation=True,
         max_length=max_length,
-        padding="max_length",
+        padding=False,  # Use dynamic padding via data collator
     )
 
 
@@ -143,7 +143,7 @@ def train_model(config):
         lr_scheduler_type=config["training"]["lr_scheduler_type"],
         max_grad_norm=config["training"]["max_grad_norm"],
         logging_dir=f"{config['training']['output_dir']}/logs",
-        evaluation_strategy="steps",
+        eval_strategy="steps",  # Changed from evaluation_strategy for transformers 4.57+
         save_strategy="steps",
         load_best_model_at_end=True,
         report_to="none",  # Disable wandb/tensorboard

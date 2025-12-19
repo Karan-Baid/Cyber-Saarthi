@@ -1,7 +1,7 @@
 # Model Configuration
 model:
-  name: "unsloth/Llama-3.2-3B-Instruct"  # or "mistralai/Mistral-7B-Instruct-v0.2"
-  max_length: 2048
+  name: "TinyLlama/TinyLlama-1.1B-Chat-v1.0"  # Using TinyLlama for compatibility
+  max_length: 1024  # Reduced from 2048 for RTX 3050
   load_in_4bit: true
 
 # LoRA Configuration
@@ -20,14 +20,13 @@ lora:
   bias: "none"
   task_type: "CAUSAL_LM"
 
-# Training Configuration
 training:
   output_dir: "./models/cyber-saarthi"
-  num_train_epochs: 3
-  per_device_train_batch_size: 4
-  per_device_eval_batch_size: 4
-  gradient_accumulation_steps: 4
-  learning_rate: 2.0e-4
+  num_train_epochs: 5  # Increased from 3 for better learning
+  per_device_train_batch_size: 1  # Reduced from 4 for RTX 3050
+  per_device_eval_batch_size: 1   # Reduced from 4 for RTX 3050
+  gradient_accumulation_steps: 2  # Reduced from 4 for memory
+  learning_rate: 1.0e-4  # Lowered from 2e-4 for better convergence
   weight_decay: 0.01
   warmup_steps: 100
   logging_steps: 10
