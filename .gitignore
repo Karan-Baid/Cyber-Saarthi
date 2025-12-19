@@ -27,7 +27,7 @@ wheels/
 # Models and data
 models/*
 !models/.gitkeep
-*.bin
+!models/cyber-saarthi/final/**
 *.safetensors
 *.pt
 *.pth
