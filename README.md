@@ -157,4 +157,4 @@ MIT License - see [LICENSE](LICENSE) file for details
 
 ---
 
-**Built with ❤️ for cybersecurity education and awareness**
+
