@@ -4,7 +4,7 @@ An AI-powered chatbot fine-tuned on Indian cyber laws to provide authoritative g
 
 ## 🎯 Project Overview
 
-**Cyber Saarthi** (Cyber Guide in Hindi) is a production-ready demonstration of **domain-specific LLM fine-tuning** for Indian cybersecurity law. This project showcases the complete machine learning pipeline from data generation to deployment:
+**Cyber Saarthi** is a production-ready demonstration of **domain-specific LLM fine-tuning** for Indian cybersecurity law. This project showcases the complete machine learning pipeline from data generation to deployment:
 
 - **Custom Dataset Engineering**: Automated generation of **544 diverse Q&A pairs** covering Indian Cyber Law (IT Act 2000) with 10+ variations per topic.
 - **Parameter-Efficient Fine-tuning**: Leveraging QLoRA (4-bit Quantized Low-Rank Adaptation) to fine-tune **TinyLlama-1.1B** for efficient yet powerful performance.
